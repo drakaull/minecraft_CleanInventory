@@ -1,4 +1,5 @@
 {
-	"key.cleaninventory.sort": "Trier l'inventaire",
-	"button.cleaninventory.sort": "Trier l'inventaire"
+	"key.cleaninventory.sort": "Trier l'inventaire (Maj : conteneur)",
+	"button.cleaninventory.sort": "Trier l'inventaire",
+	"button.cleaninventory.sort_container": "Trier le conteneur"
 }

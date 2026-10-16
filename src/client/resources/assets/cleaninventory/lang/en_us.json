@@ -1,4 +1,5 @@
 {
-	"key.cleaninventory.sort": "Sort inventory",
-	"button.cleaninventory.sort": "Sort inventory"
+	"key.cleaninventory.sort": "Sort inventory (Shift: container)",
+	"button.cleaninventory.sort": "Sort inventory",
+	"button.cleaninventory.sort_container": "Sort container"
 }
