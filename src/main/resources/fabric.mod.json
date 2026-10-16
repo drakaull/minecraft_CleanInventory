@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "cleaninventory",
+	"version": "${version}",
+	"name": "Clean Inventory",
+	"description": "Client-side inventory and chest quality-of-life tweaks.",
+	"authors": [
+		"Léonard Fontaine"
+	],
+	"license": "CC0-1.0",
+	"icon": "assets/cleaninventory/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"fr.leonard.cleaninventory.CleanInventory"
+		],
+		"client": [
+			"fr.leonard.cleaninventory.client.CleanInventoryClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
