@@ -1,9 +1,11 @@
 package fr.leonard.cleaninventory.client;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -41,14 +43,14 @@ public final class InventorySorter {
 	}
 
 	/** Sorts the 27 main inventory slots; hotbar and armor are untouched. */
-	public static void sortPlayerInventory(Minecraft mc, Screen screen) {
+	public static void sortPlayerInventory(Minecraft mc, Screen screen, SortMode mode) {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.gameMode == null) {
 			return;
 		}
 
 		if (screen instanceof CreativeModeInventoryScreen) {
-			sortCreative(mc, player);
+			sortCreative(mc, player, mode);
 			return;
 		}
 
@@ -59,11 +61,11 @@ public final class InventorySorter {
 				slots.add(slot.index);
 			}
 		}
-		sortByClicks(mc, player, slots);
+		sortByClicks(mc, player, slots, mode);
 	}
 
 	/** Sorts the open container's own slots; animal saddle and armor slots are untouched. */
-	public static void sortContainer(Minecraft mc) {
+	public static void sortContainer(Minecraft mc, SortMode mode) {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.gameMode == null || !isSortableContainer(player.containerMenu)) {
 			return;
@@ -75,11 +77,11 @@ public final class InventorySorter {
 				slots.add(slot.index);
 			}
 		}
-		sortByClicks(mc, player, slots);
+		sortByClicks(mc, player, slots, mode);
 	}
 
 	// The creative screen has its own menu, so slots are written directly like vanilla creative does.
-	private static void sortCreative(Minecraft mc, LocalPlayer player) {
+	private static void sortCreative(Minecraft mc, LocalPlayer player, SortMode mode) {
 		List<ItemStack> merged = new ArrayList<>();
 		for (int i = MAIN_FIRST; i < MAIN_END; i++) {
 			ItemStack stack = player.getInventory().getItem(i).copy();
@@ -97,7 +99,7 @@ public final class InventorySorter {
 				merged.add(stack);
 			}
 		}
-		merged.sort(order(mc, player));
+		merged.sort(order(mc, player, mode, merged));
 
 		// In InventoryMenu the menu slot index equals the inventory index for the main inventory.
 		for (int i = MAIN_FIRST; i < MAIN_END; i++) {
@@ -109,7 +111,7 @@ public final class InventorySorter {
 	}
 
 	// Simulates player clicks, so it works on any server without the mod.
-	private static void sortByClicks(Minecraft mc, LocalPlayer player, List<Integer> slots) {
+	private static void sortByClicks(Minecraft mc, LocalPlayer player, List<Integer> slots, SortMode mode) {
 		AbstractContainerMenu menu = player.containerMenu;
 		if (slots.isEmpty()) {
 			return;
@@ -132,7 +134,7 @@ public final class InventorySorter {
 			if (menu.getCarried().isEmpty()) {
 				merge(mc, player, menu, slots);
 			}
-			sort(mc, player, menu, slots, buffer);
+			sort(mc, player, menu, slots, buffer, mode);
 		}
 
 		if (parked >= 0) {
@@ -180,12 +182,12 @@ public final class InventorySorter {
 	}
 
 	// Selection sort towards the target order, using exact swaps.
-	private static void sort(Minecraft mc, LocalPlayer player, AbstractContainerMenu menu, List<Integer> slots, int buffer) {
+	private static void sort(Minecraft mc, LocalPlayer player, AbstractContainerMenu menu, List<Integer> slots, int buffer, SortMode mode) {
 		List<ItemStack> target = new ArrayList<>();
 		for (int slot : slots) {
 			target.add(menu.getSlot(slot).getItem().copy());
 		}
-		target.sort(order(mc, player));
+		target.sort(order(mc, player, mode, target));
 
 		for (int x = 0; x < slots.size(); x++) {
 			for (int y = x; y < slots.size(); y++) {
@@ -223,10 +225,27 @@ public final class InventorySorter {
 
 	// shortcut: items differing only by components (enchanted books, potions) keep their current relative order;
 	// compare components too if that ordering matters.
-	private static Comparator<ItemStack> order(Minecraft mc, LocalPlayer player) {
+	// Ties always fall back to creative menu order, then bigger stacks first; empty slots go last.
+	private static Comparator<ItemStack> order(Minecraft mc, LocalPlayer player, SortMode mode, List<ItemStack> stacks) {
 		Map<Item, Integer> index = creativeIndex(mc, player);
+		Comparator<ItemStack> creative = Comparator.comparingInt(s -> index.getOrDefault(s.getItem(), Integer.MAX_VALUE));
+		Comparator<ItemStack> primary = switch (mode) {
+			case CREATIVE -> creative;
+			// Displayed name in the game language, including anvil renames.
+			case NAME -> Comparator.comparing((ItemStack s) -> s.getHoverName().getString(),
+				Collator.getInstance(Locale.forLanguageTag(mc.getLanguageManager().getSelected().replace('_', '-'))))
+				.thenComparing(creative);
+			// Most present item first, counting every stack of it in the sorted slots.
+			case QUANTITY -> {
+				Map<Item, Integer> totals = new HashMap<>();
+				for (ItemStack stack : stacks) {
+					totals.merge(stack.getItem(), stack.getCount(), Integer::sum);
+				}
+				yield Comparator.comparingInt((ItemStack s) -> -totals.getOrDefault(s.getItem(), 0)).thenComparing(creative);
+			}
+		};
 		return Comparator.comparing(ItemStack::isEmpty)
-			.thenComparingInt((ItemStack s) -> index.getOrDefault(s.getItem(), Integer.MAX_VALUE))
+			.thenComparing(primary)
 			.thenComparing(Comparator.comparingInt(ItemStack::getCount).reversed());
 	}
 

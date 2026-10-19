@@ -3,7 +3,8 @@
 	"package": "fr.leonard.cleaninventory.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"AbstractContainerScreenAccessor"
+		"AbstractContainerScreenAccessor",
+		"AbstractMountInventoryScreenAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

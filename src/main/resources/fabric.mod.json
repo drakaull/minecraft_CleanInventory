@@ -16,6 +16,9 @@
 		],
 		"client": [
 			"fr.leonard.cleaninventory.client.CleanInventoryClient"
+		],
+		"modmenu": [
+			"fr.leonard.cleaninventory.client.ModMenuIntegration"
 		]
 	},
 	"mixins": [

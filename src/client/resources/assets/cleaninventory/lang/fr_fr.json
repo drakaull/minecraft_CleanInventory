@@ -1,5 +1,13 @@
 {
 	"key.cleaninventory.sort": "Trier l'inventaire (Maj : conteneur)",
-	"button.cleaninventory.sort": "Trier l'inventaire",
-	"button.cleaninventory.sort_container": "Trier le conteneur"
+	"key.cleaninventory.config": "Ouvrir les réglages de Clean Inventory",
+	"button.cleaninventory.sort": "Trier l'inventaire : %s (clic droit : changer de mode)",
+	"button.cleaninventory.sort_container": "Trier le conteneur : %s (clic droit : changer de mode)",
+	"sort_mode.cleaninventory.creative": "Ordre du menu créatif",
+	"sort_mode.cleaninventory.name": "Nom A-Z",
+	"sort_mode.cleaninventory.quantity": "Quantité",
+	"config.cleaninventory.title": "Clean Inventory",
+	"config.cleaninventory.default_mode": "Mode de tri par défaut",
+	"config.cleaninventory.reset": "Réinitialiser les modes du clic droit",
+	"config.cleaninventory.reset.tooltip": "L'inventaire et tous les conteneurs reviennent au mode de tri par défaut."
 }

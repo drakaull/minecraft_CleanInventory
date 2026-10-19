@@ -1,5 +1,13 @@
 {
 	"key.cleaninventory.sort": "Sort inventory (Shift: container)",
-	"button.cleaninventory.sort": "Sort inventory",
-	"button.cleaninventory.sort_container": "Sort container"
+	"key.cleaninventory.config": "Open Clean Inventory settings",
+	"button.cleaninventory.sort": "Sort inventory: %s (right-click: change mode)",
+	"button.cleaninventory.sort_container": "Sort container: %s (right-click: change mode)",
+	"sort_mode.cleaninventory.creative": "Creative menu order",
+	"sort_mode.cleaninventory.name": "Name A-Z",
+	"sort_mode.cleaninventory.quantity": "Quantity",
+	"config.cleaninventory.title": "Clean Inventory",
+	"config.cleaninventory.default_mode": "Default sort mode",
+	"config.cleaninventory.reset": "Reset right-click modes",
+	"config.cleaninventory.reset.tooltip": "The inventory and every container go back to the default sort mode."
 }
